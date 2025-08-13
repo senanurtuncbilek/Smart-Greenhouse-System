@@ -2,6 +2,7 @@
 import app from "./app";
 import db from "./db/sequelize";
 import config from "./config";
+import './db/models';
 
 async function startServer() {
   try {
@@ -18,6 +19,8 @@ async function startServer() {
     console.error("Server couldn't start:", error);
     process.exit(1);
   }
+
+
 }
 
 startServer();

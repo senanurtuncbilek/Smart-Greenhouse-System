@@ -4,7 +4,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,
-} from "@sequelize/core";
+} from "sequelize";
 import sequelize from "../sequelize";
 import * as yup from "yup";
 import Enum from "../../config/Enum";
@@ -19,25 +19,17 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare phone_number: string | null;
   declare is_active: boolean;
   declare created_at: CreationOptional<Date>;
-
-  static async validateRegisterFields(data: any) {
-    const schema = yup.object({
-      email: yup
-        .string()
-        .required("Email is required")
-        .email("Invalid email format"),
-
+  static getBaseUserSchema() {
+    return yup.object({
+      email: yup.string().email("Invalid email format"),
       password: yup
         .string()
-        .required("Password is required")
         .min(
           Enum.USER.PASSWORD_LENGTH,
           `Password must be at least ${Enum.USER.PASSWORD_LENGTH} characters`
         ),
-
-      first_name: yup.string().required("First name is required"),
-      last_name: yup.string().required("Last name is required"),
-
+      first_name: yup.string(),
+      last_name: yup.string(),
       phone_number: yup
         .string()
         .nullable()
@@ -45,7 +37,33 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
           /^\+[1-9]\d{1,14}$/,
           "Phone number must be in international E.164 format"
         ),
+      is_active: yup.boolean(),
     });
+  }
+
+  static async validateRegisterFields(data: any) {
+    const schema = this.getBaseUserSchema().shape({
+      email: yup.string().required("Email is required"),
+      password: yup
+        .string()
+        .required("Password is required")
+        .min(
+          Enum.USER.PASSWORD_LENGTH,
+          `Password must be at least ${Enum.USER.PASSWORD_LENGTH} characters`
+        ),
+      first_name: yup.string().required("First name is required"),
+      last_name: yup.string().required("Last name is required"),
+    });
+
+    try {
+      await schema.validate(data);
+    } catch (err: any) {
+      throw new CustomError(400, "Validation Error", err.message);
+    }
+  }
+
+  static async validateUpdateFields(data: any) {
+    const schema = this.getBaseUserSchema();
 
     try {
       await schema.validate(data);
@@ -61,7 +79,7 @@ User.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      columnName: "_id",
+      field: "_id",
     },
     email: {
       type: DataTypes.STRING,
