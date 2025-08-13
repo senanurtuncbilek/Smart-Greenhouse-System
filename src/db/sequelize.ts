@@ -1,18 +1,17 @@
-import { Sequelize } from '@sequelize/core';
-import { PostgresDialect } from '@sequelize/postgres';
+import { Sequelize } from 'sequelize';
 import config from '../config';
 
 
-const sequelize = new Sequelize({
-  dialect: PostgresDialect,
-  database: config.DB_NAME,
-  user: config.DB_USER,
-  password: config.DB_PASSWORD,
-  host: config.DB_HOST,
-  port: Number(config.DB_PORT) || 5432,
-  ssl: config.DB_SSL,
-  clientMinMessages: process.env.LOG_LEVEL || 'notice',
-  logging: console.log,
-});
+const sequelize = new Sequelize(
+  config.DB_NAME,
+  config.DB_USER,
+  config.DB_PASSWORD,
+  {
+    host: config.DB_HOST,
+    port: Number(config.DB_PORT) || 5432,
+    dialect: 'postgres',
+    logging: console.log,
+  }
+);
 
 export default sequelize;

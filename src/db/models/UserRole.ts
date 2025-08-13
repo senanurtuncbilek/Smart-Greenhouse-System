@@ -1,4 +1,4 @@
-import { DataTypes, Model, InferAttributes, InferCreationAttributes } from '@sequelize/core';
+import { DataTypes, Model, InferAttributes, InferCreationAttributes } from 'sequelize';
 import sequelize from '../sequelize';
 
 class UserRole extends Model<InferAttributes<UserRole>, InferCreationAttributes<UserRole>> {

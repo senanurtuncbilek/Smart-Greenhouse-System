@@ -1,3 +1,5 @@
+import config from "./index";
+
 const HTTP_CODES = {
   OK: 200,
   CREATED: 201,
@@ -20,7 +22,8 @@ const HTTP_CODES = {
 };
 const USER = {
     PASSWORD_LENGTH : 8
-}
+};
+
 
 export default {
   HTTP_CODES,
