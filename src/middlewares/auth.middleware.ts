@@ -8,7 +8,6 @@ import Enum from "../config/Enum";
 type AccessPayload = JwtPayload & {
   id: number;
   email: string;
-  roles?: string[];
 };
 
 // pull token from header
@@ -19,7 +18,7 @@ function extractToken(req: Request): string | null {
 }
 
 // token validate
-export const authenticate = async (
+export const authenticate = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -34,12 +33,11 @@ export const authenticate = async (
       "Unauthorized",
       "Token missing or invalid"
     );
-    const payload = jwt.verify(token, config.JWT.SECRET) as AccessPayload;
+    const payload = jwt.verify(token, config.JWT.SECRET, {algorithms: ["HS256"]}) as AccessPayload;
 
     req.user = {
       id: payload.id,
-      email: payload.email,
-      roles: payload.roles ?? [],
+      email: payload.email
     };
     return next();
   } catch (err) {
