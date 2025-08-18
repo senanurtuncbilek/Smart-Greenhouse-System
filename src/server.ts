@@ -2,14 +2,14 @@
 import app from "./app";
 import db from "./db/sequelize";
 import config from "./config";
-import './db/models';
+import "./db/models";
 
 async function startServer() {
   try {
     await db.authenticate();
     console.log(" Database connection successful");
 
-    await db.sync({ alter: true });
+    await db.sync({ force: true });
     console.log("Tables syncing");
 
     app.listen(config.PORT, () => {
@@ -20,7 +20,12 @@ async function startServer() {
     process.exit(1);
   }
 
-
+  console.log(
+    "DB:",
+    process.env.DB_HOST,
+    process.env.DB_NAME,
+    process.env.DB_USER
+  );
 }
 
 startServer();

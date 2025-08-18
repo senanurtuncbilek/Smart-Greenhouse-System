@@ -1,10 +1,17 @@
-import { DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
-import sequelize from '../sequelize';
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from "sequelize";
+import sequelize from "../sequelize";
 
 class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare is_active: boolean;
+  declare created_by: number | null;
   declare created_at: CreationOptional<Date>;
 }
 
@@ -24,6 +31,13 @@ Role.init(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    created_by: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: { model: "users", key: "_id" },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+    },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -32,8 +46,8 @@ Role.init(
   },
   {
     sequelize,
-    tableName: 'roles',
-    modelName: 'Role',
+    tableName: "roles",
+    modelName: "Role",
     timestamps: false,
   }
 );

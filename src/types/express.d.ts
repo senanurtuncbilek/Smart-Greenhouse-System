@@ -1,4 +1,3 @@
-// req.user
 import "express";
 
 declare global {
@@ -7,6 +6,7 @@ declare global {
       id: number;
       email: string;
       roles?: string[];
+      permissions?: string[];
     }
 
     interface Request {
