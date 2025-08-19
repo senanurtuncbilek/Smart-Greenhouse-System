@@ -48,6 +48,13 @@ export const privileges: Privilege[] = [
     description: "Delete user",
   },
 
+  {
+    key: "user_role_assign",
+    name: "User Role Assign",
+    group: "USERS",
+    description: "Assign roles to a user",
+  },
+
   //  **ROLES**
   {
     key: "role_view",
@@ -100,6 +107,12 @@ export const privileges: Privilege[] = [
     description: "Delete greenhouse",
   },
 
+  {
+    key: "greenhouse_view_all",
+    name: "Greenhouse View All",
+    group: "GREENHOUSES",
+    description: "View all users' greenhouses (admin)",
+  },
   // **ZONES**
   {
     key: "zone_view",

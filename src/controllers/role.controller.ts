@@ -8,7 +8,7 @@ import CustomError from "../utils/Error";
 import Enum from "../config/Enum";
 import { privileges as ALL_PRIVS } from "../config/role_privileges";
 
-const saltRounds = 10;
+
 
 // **Helpers**
 function ensureValidPermissions(perms: string[]) {
@@ -202,6 +202,142 @@ const roleController = {
           .json(
             ResponseUtil.successResponse(`Role with ID ${roleId} deleted.`)
           );
+      } catch (err) {
+        await t.rollback();
+        throw err;
+      }
+    } catch (err) {
+      const errorResponse = ResponseUtil.errorResponse(err);
+      return res.status(errorResponse.code).json(errorResponse);
+    }
+  },
+
+  async getPermissions(req: Request, res: Response) {
+    try {
+      const roleId = Number(req.params.id);
+      if (!Number.isFinite(roleId)) {
+        throw new CustomError(
+          Enum.HTTP_CODES.BAD_REQUEST,
+          "Validation Error",
+          "Invalid role id"
+        );
+      }
+
+      const role = await Role.findByPk(roleId, { attributes: ["id", "name"] });
+      if (!role) {
+        throw new CustomError(
+          Enum.HTTP_CODES.NOT_FOUND,
+          "Role Not Found",
+          `No role found with ID ${roleId}`
+        );
+      }
+
+      const rows = await RolePrivilege.findAll({
+        where: { role_id: roleId },
+        attributes: ["permission"],
+      });
+      const permissions = rows.map((r: any) => r.permission);
+
+      return res
+        .status(Enum.HTTP_CODES.OK)
+        .json(
+          ResponseUtil.successResponse({
+            roleId,
+            name: (role as any).name,
+            permissions,
+          })
+        );
+    } catch (err) {
+      const error = ResponseUtil.errorResponse(err);
+      return res.status(error.code).json(error);
+    }
+  },
+
+  async patchPermissions(req: Request, res: Response) {
+    try {
+      const roleId = Number(req.params.id);
+      if (!Number.isFinite(roleId)) {
+        throw new CustomError(
+          Enum.HTTP_CODES.BAD_REQUEST,
+          "Validation Error",
+          "Invalid role id"
+        );
+      }
+
+      const body = req.body as { add?: string[]; remove?: string[] };
+      const add = Array.isArray(body?.add) ? body.add : [];
+      const remove = Array.isArray(body?.remove) ? body.remove : [];
+
+      if (add.length === 0 && remove.length === 0) {
+        throw new CustomError(
+          Enum.HTTP_CODES.BAD_REQUEST,
+          "Validation Error",
+          "Provide at least one of `add` or `remove` arrays"
+        );
+      }
+
+      // Rol var mı?
+      const role = await Role.findByPk(roleId);
+      if (!role) {
+        throw new CustomError(
+          Enum.HTTP_CODES.NOT_FOUND,
+          "Role Not Found",
+          `No role found with ID ${roleId}`
+        );
+      }
+
+      // Geçerli permission’lar mı?
+      ensureValidPermissions([...add, ...remove]);
+
+      // Mevcut izinleri çek → duplicate eklemeyi engelle
+      const existing = await RolePrivilege.findAll({
+        where: { role_id: roleId },
+        attributes: ["permission"],
+      });
+      const existingSet = new Set(existing.map((e: any) => e.permission));
+
+      const toAdd = add.filter((p) => !existingSet.has(p));
+
+      // remove’da olmayanları kaldırmaya çalışmayalım (raporlama için)
+      const toRemove = remove.filter((p) => existingSet.has(p));
+
+      const t = await sequelize.transaction();
+      try {
+        if (toAdd.length) {
+          const createdBy = req.user?.id ?? null;
+          await RolePrivilege.bulkCreate(
+            toAdd.map((p) => ({
+              role_id: roleId,
+              permission: p,
+              created_by: createdBy,
+            })),
+            { transaction: t }
+          );
+        }
+
+        if (toRemove.length) {
+          await RolePrivilege.destroy({
+            where: { role_id: roleId, permission: toRemove },
+            transaction: t,
+          });
+        }
+
+        await t.commit();
+
+        // Son durum
+        const finalRows = await RolePrivilege.findAll({
+          where: { role_id: roleId },
+          attributes: ["permission"],
+        });
+        const finalPermissions = finalRows.map((r: any) => r.permission);
+
+        return res.status(Enum.HTTP_CODES.OK).json(
+          ResponseUtil.successResponse({
+            added: toAdd,
+            removed: toRemove,
+            finalPermissions,
+          })
+        );
       } catch (err) {
         await t.rollback();
         throw err;

@@ -1,12 +1,16 @@
-
-import { DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
-import sequelize from '../sequelize';
-
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from "sequelize";
+import sequelize from "../sequelize";
 
 class Greenhouse extends Model<
-    InferAttributes<Greenhouse>,
-    InferCreationAttributes<Greenhouse>
-  > {
+  InferAttributes<Greenhouse>,
+  InferCreationAttributes<Greenhouse>
+> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare user_id: number;
@@ -20,12 +24,11 @@ Greenhouse.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-      field: '_id',
+      field: "_id",
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     user_id: {
       type: DataTypes.INTEGER,
@@ -43,9 +46,17 @@ Greenhouse.init(
   },
   {
     sequelize,
-    tableName: 'greenhouses',
-    modelName: 'Greenhouse',
+    tableName: "greenhouses",
+    modelName: "Greenhouse",
     timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["user_id", "name"],
+        name: "uniq_user_greenhouse_name",
+      },
+      { fields: ["user_id"] },
+    ],
   }
 );
 

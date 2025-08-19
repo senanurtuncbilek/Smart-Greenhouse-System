@@ -1,11 +1,11 @@
-// src/db/models/associations.ts
 import User from "./Users";
 import Role from "./Roles";
 import UserRole from "./UserRole";
 import RolePrivilege from "./RolePrivileges";
 import Greenhouse from "./Greenhouses";
 import Zone from "./Zones";
-
+import Sensor from "./Sensors";
+import SensorReading from "./SensorReadings";
 
 User.hasMany(UserRole, {
   as: "userRoles",
@@ -32,7 +32,7 @@ UserRole.belongsTo(Role, {
 User.hasMany(Role, {
   as: "createdRoles",
   foreignKey: { name: "created_by", allowNull: true },
-  onDelete: "CASCADE",
+  onDelete: "SET NULL",
   onUpdate: "CASCADE",
 });
 Role.belongsTo(User, {
@@ -69,7 +69,7 @@ RolePrivilege.belongsTo(Role, {
 });
 
 //
-// User ↔ RolePrivilege (created_by) (1:N - opsiyonel)
+// User ↔ RolePrivilege (created_by) (1:N)
 //
 User.hasMany(RolePrivilege, {
   as: "createdPrivileges",
@@ -108,6 +108,30 @@ Greenhouse.hasMany(Zone, {
 Zone.belongsTo(Greenhouse, {
   as: "greenhouse",
   foreignKey: { name: "greenhouse_id", allowNull: false },
+});
+
+// Zone ↔ Sensor (1:N)
+Zone.hasMany(Sensor, {
+  as: "sensors",
+  foreignKey: { name: "zone_id", allowNull: false },
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Sensor.belongsTo(Zone, {
+  as: "zone",
+  foreignKey: { name: "zone_id", allowNull: false },
+});
+
+// Sensor ↔ SensorReading (1:N)
+Sensor.hasMany(SensorReading, {
+  as: "readings",
+  foreignKey: { name: "sensor_id", allowNull: false },
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+SensorReading.belongsTo(Sensor, {
+  as: "sensor",
+  foreignKey: { name: "sensor_id", allowNull: false },
 });
 
 export { User, Role, UserRole, RolePrivilege, Greenhouse, Zone };
