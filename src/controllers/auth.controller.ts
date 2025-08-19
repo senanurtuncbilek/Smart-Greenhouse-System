@@ -10,7 +10,6 @@ import config from "../config";
 import { User, Role } from "../db/models";
 import redis from "../utils/Redis";
 
-// ==== Refresh Rotation Helpers ==== //
 const REFRESH_TTL_SEC = 7 * 24 * 60 * 60; // 7d
 
 function nowSec() {
@@ -43,9 +42,6 @@ function parseJson<T>(s: string | null): T | null {
 }
 
 const authController = {
-  // ===========================
-  // LOGIN
-  // ===========================
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
@@ -121,10 +117,7 @@ const authController = {
       return res.status(errorResponse.code).json(errorResponse);
     }
   },
-
-  // ===========================
   // REFRESH (Rotation + Reuse Detection)
-  // ===========================
   async refresh(req: Request, res: Response) {
     try {
       const token = (req as any).cookies?.refresh_token;
@@ -160,8 +153,6 @@ const authController = {
         }
         await redis.del(keySid(sid));
 
-        // (Opsiyonel) logger.warn(`Refresh reuse detected for user ${userId}, sid ${sid}`);
-
         throw new CustomError(
           Enum.HTTP_CODES.UNAUTHORIZED,
           "Unauthorized",
@@ -169,7 +160,7 @@ const authController = {
         );
       }
 
-      // 4) Eski jti'yi rotated=true işaretle (reuse gelirse yakalarsın)
+      // 4) Eski jti'yi rotated=true işaretle
       rec.rotated = true;
       const remain = Math.max(1, rec.exp - nowSec());
       await redis.set(keyJti(jti), JSON.stringify(rec), { EX: remain });
@@ -188,7 +179,7 @@ const authController = {
 
       const roles = (user as any).roles?.map((r: any) => r.name) ?? [];
 
-      // 6) Yeni access
+      // 6) Yeni token
       const newAccessToken = jwt.sign(
         { id: (user as any).id, email: (user as any).email, roles },
         config.JWT.SECRET as string,
@@ -212,7 +203,7 @@ const authController = {
       };
       await redis.set(keyJti(newJti), JSON.stringify(newRec), { EX: REFRESH_TTL_SEC });
 
-      // 9) family listesine ekle
+      // 9) sid  family listesine ekle
       const list = parseJson<string[]>(await redis.get(keySid(sid))) ?? [];
       list.push(newJti);
       await redis.set(keySid(sid), JSON.stringify(list), { EX: REFRESH_TTL_SEC });
@@ -232,10 +223,6 @@ const authController = {
       return res.status(errorResponse.code).json(errorResponse);
     }
   },
-
-  // ===========================
-  // LOGOUT (Bu cihaza özel)
-  // ===========================
   async logout(req: Request, res: Response) {
     try {
       const token = (req as any).cookies?.refresh_token;
@@ -256,7 +243,7 @@ const authController = {
             await redis.del(keySid(sid));
           }
         } catch (err: any) {
-          // süresi dolmuş/bozuk ise sessiz geç
+          // süresi dolmuş veya bozuk ise sessiz geç
           if (!["TokenExpiredError", "JsonWebTokenError"].includes(err?.name)) throw err;
         }
       }

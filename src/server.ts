@@ -9,7 +9,7 @@ async function startServer() {
     await db.authenticate();
     console.log(" Database connection successful");
 
-    await db.sync({ force: true });
+    await db.sync({ alter: true });
     console.log("Tables syncing");
 
     app.listen(config.PORT, () => {
