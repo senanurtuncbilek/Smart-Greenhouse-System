@@ -20,8 +20,7 @@ Zone.init(
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
+      allowNull: false
     },
     greenhouse_id: {
       type: DataTypes.INTEGER,
