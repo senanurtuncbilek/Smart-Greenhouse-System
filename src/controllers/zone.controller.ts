@@ -35,7 +35,6 @@ const zoneController = {
         where.greenhouse_id = greenhouseId;
       } else if (!isAdmin(req)) {
         // Admin değilse, sadece kendi seralarına ait zonelar
-        // Basit yol: join yoksa, listelemek için greenhouse_id paramı zorunlu kılmayı tercih edebilirsin.
         throw new CustomError(Enum.HTTP_CODES.BAD_REQUEST, "Validation Error", "Provide greenhouse_id");
       }
 

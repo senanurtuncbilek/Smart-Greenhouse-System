@@ -1,75 +1,117 @@
+
 /**
  * @openapi
  * /sensor:
  *   get:
- *     tags: [Sensor]
+ *     tags:
+ *       - Sensor
  *     summary: Sensör listesi
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: zone_id
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *       - in: query
  *         name: page
- *         schema: { type: integer, default: 1 }
+ *         schema:
+ *           type: integer
+ *           default: 1
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema:
+ *           type: integer
+ *           default: 10
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
  */
 
 /**
  * @openapi
  * /sensor/{id}:
  *   get:
- *     tags: [Sensor]
+ *     tags:
+ *       - Sensor
  *     summary: Sensör detayı
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
  */
 
 /**
  * @openapi
  * /sensor:
  *   post:
- *     tags: [Sensor]
+ *     tags:
+ *       - Sensor
  *     summary: Sensör oluştur
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, type, zone_id, location]
+ *             required:
+ *               - name
+ *               - type
+ *               - zone_id
+ *               - location
  *             properties:
- *               name: { type: string }
- *               type: { type: string, enum: ["temperature","humidity","soil_moisture","light_level","ph","co2"] }
- *               zone_id: { type: integer }
- *               location: { type: string }
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 enum: [temperature, humidity, soil_moisture, light_level, ph, co2]
+ *               zone_id:
+ *                 type: integer
+ *               location:
+ *                 type: string
  *     responses:
- *       201: { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '201':
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
 
 /**
  * @openapi
  * /sensor/{id}:
  *   patch:
- *     tags: [Sensor]
+ *     tags:
+ *       - Sensor
  *     summary: Sensör güncelle
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -77,54 +119,88 @@
  *           schema:
  *             type: object
  *             properties:
- *               name: { type: string }
- *               location: { type: string }
- *               status: { type: string, enum: ["active","inactive","maintenance","error"] }
+ *               name:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [active, inactive, maintenance, error]
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
 
 /**
  * @openapi
  * /sensor/{id}:
  *   delete:
- *     tags: [Sensor]
+ *     tags:
+ *       - Sensor
  *     summary: Sensör sil
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
 
 /**
  * @openapi
  * /sensor/{id}/readings:
  *   get:
- *     tags: [Sensor]
+ *     tags:
+ *       - Sensor
  *     summary: Sensör ölçümleri
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *       - in: query
  *         name: from
- *         schema: { type: string, format: date-time }
+ *         schema:
+ *           type: string
+ *           format: date-time
  *       - in: query
  *         name: to
- *         schema: { type: string, format: date-time }
+ *         schema:
+ *           type: string
+ *           format: date-time
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 200 }
+ *         schema:
+ *           type: integer
+ *           default: 200
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
  */
-
 import { Router } from "express";
 import sensorController from "../controllers/sensor.controller";
 import { authenticate } from "../middlewares/auth.middleware";

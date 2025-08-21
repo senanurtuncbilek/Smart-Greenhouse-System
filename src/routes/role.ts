@@ -1,46 +1,57 @@
 /**
  * @openapi
- * /role:
- *   get:
- *     tags: [Role]
- *     summary: Rol listesi
- *     security: [ { bearerAuth: [] } ]
- *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
- */
-/**
- * @openapi
  * /role/add:
  *   post:
- *     tags: [Role]
+ *     tags:
+ *       - Role
  *     summary: Rol oluştur
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, permissions]
+ *             required:
+ *               - name
+ *               - permissions
  *             properties:
- *               name: { type: string }
- *               is_active: { type: boolean, default: true }
- *               permissions: { type: array, items: { type: string } }
+ *               name:
+ *                 type: string
+ *               is_active:
+ *                 type: boolean
+ *                 default: true
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
- *       201: { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '201':
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
+
 /**
  * @openapi
  * /role/update/{id}:
  *   post:
- *     tags: [Role]
+ *     tags:
+ *       - Role
  *     summary: Rol güncelle
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -48,54 +59,64 @@
  *           schema:
  *             type: object
  *             properties:
- *               name: { type: string }
- *               is_active: { type: boolean }
- *               permissions: { type: array, items: { type: string } }
+ *               name:
+ *                 type: string
+ *               is_active:
+ *                 type: boolean
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
-/**
- * @openapi
- * /role/delete/{id}:
- *   post:
- *     tags: [Role]
- *     summary: Rol sil
- *     security: [ { bearerAuth: [] } ]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema: { type: integer }
- *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
- */
+
 /**
  * @openapi
  * /role/{id}/permissions:
  *   get:
- *     tags: [Role]
+ *     tags:
+ *       - Role
  *     summary: Rol izinlerini getir
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
  */
+
 /**
  * @openapi
  * /role/{id}/permissions:
  *   patch:
- *     tags: [Role]
+ *     tags:
+ *       - Role
  *     summary: Rol izinlerini güncelle (add/remove)
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -103,12 +124,32 @@
  *           schema:
  *             type: object
  *             properties:
- *               add: { type: array, items: { type: string } }
- *               remove: { type: array, items: { type: string } }
+ *               add:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               remove:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
- *       403: { description: Forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '403':
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
+
+
 
 import { Router } from "express";
 import roleController from "../controllers/role.controller";

@@ -1,4 +1,5 @@
 import swaggerJSDoc from "swagger-jsdoc";
+import path from "path";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -8,24 +9,15 @@ const options: swaggerJSDoc.Options = {
       version: "1.0.0",
       description: "REST API dokümantasyonu",
     },
-    servers: [
-      { url: "/api", description: "Base path (server.ts'te /api mount edildi)" }
-    ],
+    servers: [{ url: "/api", description: "Base path (server.ts'te /api mount edildi)" }],
     components: {
       securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
+        bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
       },
       schemas: {
         SuccessResponse: {
           type: "object",
-          properties: {
-            code: { type: "number" },
-            data: {},
-          },
+          properties: { code: { type: "number" }, data: {} },
         },
         ErrorResponse: {
           type: "object",
@@ -50,9 +42,7 @@ const options: swaggerJSDoc.Options = {
         },
         LoginResponse: {
           type: "object",
-          properties: {
-            access_token: { type: "string" },
-          },
+          properties: { access_token: { type: "string" } },
         },
         Greenhouse: {
           type: "object",
@@ -77,9 +67,9 @@ const options: swaggerJSDoc.Options = {
           properties: {
             id: { type: "integer" },
             name: { type: "string" },
-            type: { type: "string", enum: ["temperature","humidity","soil_moisture","light_level","ph","co2"] },
+            type: { type: "string", enum: ["temperature", "humidity", "soil_moisture", "light_level", "ph", "co2"] },
             zone_id: { type: "integer" },
-            status: { type: "string", enum: ["active","inactive","maintenance","error"] },
+            status: { type: "string", enum: ["active", "inactive", "maintenance", "error"] },
             location: { type: "string" },
           },
         },
@@ -95,10 +85,50 @@ const options: swaggerJSDoc.Options = {
             anomaly_score: { type: "number", nullable: true },
           },
         },
+
+        // ↙️ 429 gövdesi
+        RateLimitErrorResponse: {
+          type: "object",
+          properties: {
+            code: { type: "string", example: "RATE_LIMITED" },
+            message: { type: "string", example: "Too many requests. Please try again later." },
+            retryAfterSeconds: { type: "integer", example: 60 },
+            details: {
+              type: "object",
+              properties: {
+                limit: { type: "integer", example: 60 },
+                windowSeconds: { type: "integer", example: 60 },
+              },
+            },
+            traceId: { type: "string", nullable: true },
+          },
+        },
+      },
+
+      // ↙️ yeniden kullanılabilir 429 cevabı
+      responses: {
+        RateLimited: {
+          description: "Çok fazla istek (rate limit aşıldı)",
+          headers: {
+            "RateLimit-Limit": { schema: { type: "integer" }, description: "Pencere başına izin verilen toplam istek" },
+            "RateLimit-Remaining": { schema: { type: "integer" }, description: "Pencere bitene kadar kalan istek" },
+            "RateLimit-Reset": { schema: { type: "integer" }, description: "Pencerenin sıfırlanmasına kalan saniye" },
+          },
+          content: {
+            "application/json": { schema: { $ref: "#/components/schemas/RateLimitErrorResponse" } },
+          },
+        },
       },
     },
   },
-  apis: ["src/routes/**/*.ts"], // JSDoc açıklamalarını bu dosyalardan okuyacak
+
+  // Windows’ta kaybolmasın diye MUTLAK yollar
+  apis: [
+    path.resolve(__dirname, "../routes/*.ts"),
+    path.resolve(__dirname, "../routes/**/*.ts"),
+  ],
+
+  failOnErrors: true, // YAML hatasını gizlemesin
 };
 
 export const swaggerSpec = swaggerJSDoc(options);

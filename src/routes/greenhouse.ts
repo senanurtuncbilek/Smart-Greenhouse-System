@@ -2,7 +2,8 @@
  * @openapi
  * /greenhouse:
  *   post:
- *     tags: [Greenhouse]
+ *     tags:
+ *       - Greenhouse
  *     summary: Sera oluştur
  *     security:
  *       - bearerAuth: []
@@ -12,78 +13,105 @@
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, location]
+ *             required:
+ *               - name
+ *               - location
  *             properties:
- *               name: { type: string }
- *               location: { type: string }
+ *               name:
+ *                 type: string
+ *               location:
+ *                 type: string
  *     responses:
- *       201:
+ *       '201':
  *         description: Oluşturuldu
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/SuccessResponse'
- *       403:
+ *       '403':
  *         description: Yetki yok
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
 
 /**
  * @openapi
  * /greenhouse:
  *   get:
- *     tags: [Greenhouse]
+ *     tags:
+ *       - Greenhouse
  *     summary: Sera listesi
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: q
- *         schema: { type: string }
+ *         schema:
+ *           type: string
  *       - in: query
  *         name: page
- *         schema: { type: integer, default: 1 }
+ *         schema:
+ *           type: integer
+ *           default: 1
  *       - in: query
  *         name: limit
- *         schema: { type: integer, default: 10 }
+ *         schema:
+ *           type: integer
+ *           default: 10
  *     responses:
- *       200:
+ *       '200':
  *         description: Liste
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
+
 /**
  * @openapi
  * /greenhouse/{id}:
  *   get:
- *     tags: [Greenhouse]
+ *     tags:
+ *       - Greenhouse
  *     summary: Sera detayı
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
  */
+
 /**
  * @openapi
  * /greenhouse/{id}:
  *   patch:
- *     tags: [Greenhouse]
+ *     tags:
+ *       - Greenhouse
  *     summary: Sera güncelle
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -91,26 +119,47 @@
  *           schema:
  *             type: object
  *             properties:
- *               name: { type: string }
- *               location: { type: string }
+ *               name:
+ *                 type: string
+ *               location:
+ *                 type: string
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
+
 /**
  * @openapi
  * /greenhouse/{id}:
  *   delete:
- *     tags: [Greenhouse]
+ *     tags:
+ *       - Greenhouse
  *     summary: Sera sil
- *     security: [ { bearerAuth: [] } ]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         schema:
+ *           type: integer
  *     responses:
- *       200: { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+ *       '200':
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       '429':
+ *         $ref: '#/components/responses/RateLimited'
  */
+
 import { Router } from "express";
 import greenhouseController from "../controllers/greenhouse.controller";
 import { authenticate } from "../middlewares/auth.middleware";

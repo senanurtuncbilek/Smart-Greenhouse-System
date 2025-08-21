@@ -65,7 +65,7 @@ AutomationRule.init(
       defaultValue: RuleStatus.ACTIVE,
     },
     priority: {
-      type: DataTypes.ENUM(...Object.values(RulePriority)),
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: RulePriority.MEDIUM,
     },
