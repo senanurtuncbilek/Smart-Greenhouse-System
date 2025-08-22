@@ -8,9 +8,12 @@ async function startServer() {
   try {
     await db.authenticate();
     console.log(" Database connection successful");
-
-    // await db.sync({ force: true });
-    //  console.log("Tables syncing");
+    if (process.env.DB_SYNC_ALTER === "true") {
+      await db.sync({ alter: true });
+      console.log("Tables syncing (alter)");
+    } else {
+      console.log("Skipping Sequelize sync; use migrations via sequelize-cli");
+    }
 
     app.listen(config.PORT, () => {
       console.log(`Server running on port ${config.PORT}`);

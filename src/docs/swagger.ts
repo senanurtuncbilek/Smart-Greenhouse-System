@@ -131,4 +131,10 @@ const options: swaggerJSDoc.Options = {
   failOnErrors: true, // YAML hatasını gizlemesin
 };
 
+// Include both TS (dev) and JS (prod) route files so docs work everywhere
+options.apis = [
+  "dist/routes/**/*.js",
+  "src/routes/**/*.ts",
+];
+
 export const swaggerSpec = swaggerJSDoc(options);

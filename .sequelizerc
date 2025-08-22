@@ -3,6 +3,7 @@ const path = require("path");
 require("ts-node/register");
 
 module.exports = {
+  // Use JS config file for sequelize-cli (copied into image)
   config: path.resolve("config.js"),
   "models-path": path.resolve("src", "db", "models"),
   "seeders-path": path.resolve("src", "db", "seeders"),

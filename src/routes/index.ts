@@ -8,7 +8,9 @@ const router = Router();
   const routes = fs.readdirSync(__dirname);
 
   for (let route of routes) {
-    if (route.endsWith(".ts") && route !== "index.ts") {
+    const isRouteTs = route.endsWith(".ts") && route !== "index.ts";
+    const isRouteJs = route.endsWith(".js") && route !== "index.js";
+    if (isRouteTs || isRouteJs) {
       const fullPath = path.join(__dirname, route);
       const loaded = await import(fullPath);
       const routerExport = loaded.default ?? loaded;
@@ -17,7 +19,7 @@ const router = Router();
         typeof routerExport === "function" ||
         typeof routerExport.handle === "function"
       ) {
-        const routePath = "/" + route.replace(".ts", "");
+        const routePath = "/" + route.replace(/\.(ts|js)$/i, "");
         router.use(routePath, routerExport);
         console.log("✔ Route loaded:", route);
       } else {

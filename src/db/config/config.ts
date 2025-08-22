@@ -22,7 +22,7 @@ interface Config {
 
 const config: Config = {
   development: {
-    username: process.env.DB_USERNAME || "postgres",
+    username: process.env.DB_USERNAME || process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "senin_sifren",
     database: process.env.DB_NAME || "veritabani_adi",
     host: process.env.DB_HOST || "localhost",
@@ -38,11 +38,11 @@ const config: Config = {
     dialect: "postgres",
   },
   production: {
-    username: "postgres",
-    password: "sena2002nur",
-    database: "intermediateProject",
-    host: "localhost",
-    port: 5432,
+    username: process.env.DB_USERNAME || process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD || "",
+    database: process.env.DB_NAME || "intermediateProject",
+    host: process.env.DB_HOST || "localhost",
+    port: Number(process.env.DB_PORT) || 5432,
     dialect: "postgres",
   },
 };
